@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大势研判 | 解构六大维度，洞悉宏观环境</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <!-- Word 导出无需额外库 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy: #1A237E;
+            --gold: #0288D1;
+            --gold-dark: #0277BD;
+            --text: #1A1A2E;
+            --text-secondary: #6B7280;
+            --bg: #F0F4F8;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --error: #EF4444;
+        }
+        body {
+            font-family: 'Noto Sans SC', 'Inter', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .header {
+            background: linear-gradient(135deg, #1A237E 0%, #0288D1 55%, #29B6F6 100%);
+            color: var(--white);
+            padding: 28px 0 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.35);
+        }
+        .header h1 { font-size: 30px; font-weight: 700; letter-spacing: 2px; }
+        .header .slogan { color: #FFFFFF; font-size: 15px; font-weight: 600; margin-top: 6px; letter-spacing: 1px; }
+        /* 顶部固定工具栏 */
+        .fixed-toolbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: #FFFFFF;
+            padding: 10px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        body.toolbar-visible { padding-top: 50px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 40px; }
+        .form-section { background: var(--white); border-radius: 10px; padding: 36px 40px; box-shadow: 0 2px 12px rgba(11,29,58,0.08); }
+        .form-section h2 { color: var(--navy); font-size: 22px; font-weight: 700; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 2px solid var(--gold); }
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; color: var(--navy); font-size: 14px; margin-bottom: 8px; }
+        .form-group label .required { color: var(--error); margin-left: 2px; }
+        .form-group input, .form-group select { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--white); }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(2,136,209,0.18); }
+        .form-group input::placeholder { color: #9CA3AF; }
+        .error-msg { color: var(--error); font-size: 12px; margin-top: 5px; display: none; }
+        .btn-row { display: flex; gap: 12px; margin-top: 8px; }
+        .btn { padding: 12px 32px; border: none; border-radius: 7px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+        .btn-gold { background: var(--gold); color: var(--white); }
+        .btn-gold:hover { background: var(--gold-dark); }
+        .btn-gold:disabled { background: #D1D5DB; color: #9CA3AF; cursor: not-allowed; }
+        .btn-navy { background: #1A237E; color: var(--white); }
+        .btn-navy:hover { background: #0D47A1; }
+        .btn-outline { background: transparent; color: #0288D1; border: 1.5px solid #0288D1; }
+        .btn-outline:hover { background: #0288D1; color: var(--white); }
+        .loading-section { display: none; background: var(--white); border-radius: 10px; padding: 48px 40px; text-align: center; box-shadow: 0 2px 12px rgba(11,29,58,0.08); margin-top: 10px; }
+        .spinner { width: 44px; height: 44px; border: 4px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-label { font-size: 16px; color: var(--text-secondary); margin-bottom: 16px; }
+        .loading-bars { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
+        .loading-bars .bar { width: 6px; height: 24px; background: var(--gold); border-radius: 3px; animation: barPulse 1.2s ease-in-out infinite; }
+        .loading-bars .bar:nth-child(2) { animation-delay: 0.15s; }
+        .loading-bars .bar:nth-child(3) { animation-delay: 0.3s; }
+        .loading-bars .bar:nth-child(4) { animation-delay: 0.45s; }
+        .loading-bars .bar:nth-child(5) { animation-delay: 0.6s; }
+        @keyframes barPulse { 0%,100% { transform: scaleY(0.4); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
+        .timer-display { font-size: 14px; color: var(--text-secondary); }
+        .timer-display span { color: var(--navy); font-weight: 600; }
+        .report-section { display: none; background: var(--white); border-radius: 10px; box-shadow: 0 2px 12px rgba(11,29,58,0.08); margin-top: 10px; }
+        .report-cover { background: linear-gradient(135deg, #1A237E 0%, #0288D1 55%, #29B6F6 100%); color: var(--white); padding: 56px 48px; text-align: center; position: relative; border-radius: 10px 10px 0 0; }
+        .report-cover .cover-tag { display: inline-block; background: rgba(255,255,255,0.15); color: var(--white); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; letter-spacing: 1px; margin-bottom: 20px; }
+        .report-cover h1 { font-size: 30px; font-weight: 700; margin-bottom: 10px; color: var(--white); }
+        .report-cover .cover-subtitle { color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 6px; }
+        .report-cover .cover-line { width: 60px; height: 2px; background: rgba(255,255,255,0.6); margin: 18px auto; }
+        .report-cover .cover-product { color: #FFFFFF; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; text-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+        .report-body { padding: 36px 44px 20px; }
+        .report-actions { display: flex; gap: 12px; padding: 20px 44px 36px; border-top: 1px solid var(--border); background: #FAFBFC; border-radius: 0 0 10px 10px; }
+        .report-content h1 { font-size: 22px; color: var(--navy); margin: 32px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--gold); font-weight: 700; }
+        .report-content h2 { font-size: 18px; color: var(--navy); margin: 24px 0 12px; font-weight: 600; }
+        .report-content h3 { font-size: 16px; color: var(--text); margin: 18px 0 10px; font-weight: 600; }
+        .report-content p { margin-bottom: 12px; line-height: 1.85; }
+        .report-content table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 13.5px; }
+        .report-content th { background: var(--navy); color: var(--white); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; white-space: nowrap; }
+        .report-content td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .report-content tr:nth-child(even) td { background: #F9FAFB; }
+        .report-content tr:hover td { background: #F0F4FA; }
+        .report-content ul, .report-content ol { margin: 10px 0 16px 20px; }
+        .report-content li { margin-bottom: 7px; line-height: 1.8; }
+        .report-content strong { color: var(--navy); }
+        .report-footer { text-align: center; padding: 28px 0 16px; margin-top: 36px; border-top: 1px solid var(--border); color: #FFFFFF; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
+        .streaming-cursor { display: inline-block; width: 7px; height: 18px; background: var(--gold); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
+        @keyframes blink { 50% { opacity: 0; } }
+        @media (max-width: 640px) {
+            .form-row { flex-direction: column; gap: 0; }
+            .form-section { padding: 24px 20px; }
+            .report-body { padding: 20px; }
+            .report-cover { padding: 36px 20px; }
+            .report-actions { padding: 16px 20px 24px; }
+            .container { padding: 16px 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>大势研判 <span style="font-size:18px;font-weight:400;color:rgba(255,255,255,0.5);">v1.0</span></h1>
+    <p class="slogan">解构六大维度，洞悉宏观环境</p>
+</div>
+<div class="container">
+    <div id="form-section" class="form-section">
+        <h2>生成 PESTEL 宏观环境分析报告</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label>分析对象 <span class="required">*</span></label>
+                <input type="text" id="analysis-target" placeholder="如：低空经济、智算、新能源汽车、人形机器人">
+                <div id="target-error" class="error-msg">请输入分析对象</div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>目标地区 <span class="required">*</span></label>
+                <select id="region">
+                    <option value="">请选择目标地区</option>
+                    <option value="全国" selected>全国</option>
+                    <optgroup label="直辖市">
+                        <option value="北京市">北京市</option>
+                        <option value="天津市">天津市</option>
+                        <option value="上海市">上海市</option>
+                        <option value="重庆市">重庆市</option>
+                    </optgroup>
+                    <optgroup label="省">
+                        <option value="河北省">河北省</option>
+                        <option value="山西省">山西省</option>
+                        <option value="辽宁省">辽宁省</option>
+                        <option value="吉林省">吉林省</option>
+                        <option value="黑龙江省">黑龙江省</option>
+                        <option value="江苏省">江苏省</option>
+                        <option value="浙江省">浙江省</option>
+                        <option value="安徽省">安徽省</option>
+                        <option value="福建省">福建省</option>
+                        <option value="江西省">江西省</option>
+                        <option value="山东省">山东省</option>
+                        <option value="河南省">河南省</option>
+                        <option value="湖北省">湖北省</option>
+                        <option value="湖南省">湖南省</option>
+                        <option value="广东省">广东省</option>
+                        <option value="海南省">海南省</option>
+                        <option value="四川省">四川省</option>
+                        <option value="贵州省">贵州省</option>
+                        <option value="云南省">云南省</option>
+                        <option value="陕西省">陕西省</option>
+                        <option value="甘肃省">甘肃省</option>
+                        <option value="青海省">青海省</option>
+                        <option value="台湾省">台湾省</option>
+                    </optgroup>
+                    <optgroup label="自治区">
+                        <option value="内蒙古自治区">内蒙古自治区</option>
+                        <option value="广西壮族自治区">广西壮族自治区</option>
+                        <option value="西藏自治区">西藏自治区</option>
+                        <option value="宁夏回族自治区">宁夏回族自治区</option>
+                        <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
+                    </optgroup>
+                    <optgroup label="特别行政区">
+                        <option value="香港特别行政区">香港特别行政区</option>
+                        <option value="澳门特别行政区">澳门特别行政区</option>
+                    </optgroup>
+                </select>
+                <div id="region-error" class="error-msg">请选择目标地区</div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button id="generate-btn" class="btn btn-gold">生成报告</button>
+        </div>
+        <div id="form-footer" style="text-align:center;padding:20px 0 4px;border-top:1px solid var(--border);margin-top:20px;color:var(--text-secondary);font-size:13px;font-weight:600;letter-spacing:0.5px;"></div>
+    </div>
+    <div id="loading-section" class="loading-section">
+        <div class="spinner"></div>
+        <div class="loading-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        <div class="loading-label">AI 正在分析宏观环境，请稍候...</div>
+        <div class="timer-display">
+            已耗时 <span id="elapsed-time">00:00</span>
+            &nbsp;&nbsp;|&nbsp;&nbsp;
+            预计剩余 <span id="estimated-time">01:30</span>
+        </div>
+    </div>
+    <div id="report-section" class="report-section">
+        <div id="report-cover" class="report-cover"></div>
+        <div class="report-body">
+            <div id="report-content" class="report-content"></div>
+            <div id="report-footer" class="report-footer"></div>
+        </div>
+        <div class="report-actions">
+            <button id="download-word-btn-2" class="btn btn-navy">下载 Word</button>
+            <button id="new-report-btn" class="btn btn-outline">新建分析</button>
+        </div>
+    </div>
+</div>
+
+<!-- 顶部固定工具栏（报告生成后显示） -->
+<div id="fixed-toolbar" class="fixed-toolbar">
+    <button id="fixed-download-btn" class="btn btn-navy">下载 Word</button>
+    <button id="fixed-new-btn" class="btn btn-outline" style="margin-left:10px;">新建分析</button>
+</div>
+
+<script>
+// ===== 配置区 =====
+var CONFIG = {
+    API_URL: 'https://deepseek-proxy-a8p.pages.dev',
+    MODEL: 'deepseek-chat',
+    PRODUCT_NAME: '大势研判',
+    VERSION: 'v1.0',
+    SLOGAN: '解构六大维度，洞悉宏观环境',
+    AUTHOR: '晓得'
+};
+
+// System Prompt（按v3.3需求文档 §4.1）
+var SYSTEM_PROMPT = '你是一位资深的宏观环境战略分析师，擅长 PESTEL 分析框架。你的任务是针对用户指定的分析对象和目标地区，生成一份高质量的宏观环境分析报告。\n\n输出要求：\n1. 严格按 PESTEL 六个维度展开分析\n2. 每个维度需包含：因素识别表格（因素名称、详细内容描述、影响程度H/M/L、机会/威胁）和关键启示\n3. 内容使用编号列表格式，不加冗余铺垫\n4. 所有数据和信息必须是当前年份和上一年份发布的信息或数据（即近2年），优先使用最新的数据和信息；超出此范围的数据和信息不得体现在分析结果中\n5. 每个细分因素的"详细内容描述"篇幅控制在250-350字，包含具体的政策名称、数据指标数值、事件描述、趋势判断等实质内容，避免空泛概述\n6. 每一个段落的末尾必须备注该段落信息的来源，格式如：（来源：国家统计局，2025年）或（来源：XXX政策文件，2024年）或（来源：XXX研究报告，2025年）。关键启示部分不需要备注来源\n7. 输出数据和论断融合文字、表格等一种或多种形式，详细叙述\n8. 当目标地区为具体省份/直辖市/特别行政区时，需融入国家级宏观背景';
+
+// User Prompt（按v3.1需求文档 §4.2，维度顺序：P-E-S-T-E-L）
+function buildUserPrompt(target, region) {
+    var p = '分析对象：' + target + '\n目标地区：' + region + '\n\n';
+    p += '请生成完整的 PESTEL 宏观环境分析报告，包含以下部分：\n\n';
+    p += '## 一、执行摘要\n（3-5句核心发现）\n\n';
+    p += '## 二、各维度详细分析\n\n';
+    p += '### （一）P 政治因素\n\n';
+    p += '| 因素 | 详细内容描述 | 影响程度 | 机会/威胁 |\n|------|-------------|---------|----------|\n（列出5-8个关键因素，描述须包含具体政策名称、文号、发布机构等详细信息）\n\n';
+    p += '**关键启示：**\n1. ...\n2. ...\n3. ...\n4. ...\n5. ...\n\n';
+    p += '### （二）E 经济因素\n（同上结构，须包含具体经济指标数值、同比增长率等详细数据）\n\n';
+    p += '### （三）S 社会因素\n（同上结构，须包含具体人口数据、消费趋势、社会事件等详细描述）\n\n';
+    p += '### （四）T 技术因素\n（同上结构，须包含具体技术突破、专利数据、研发投入等详细信息）\n\n';
+    p += '### （五）E 环境因素\n（同上结构，须包含具体环保政策、碳排放数据、环境指标等详细信息）\n\n';
+    p += '### （六）L 法律因素\n（同上结构，须包含具体法律法规名称、实施时间、适用范围等详细信息）\n\n';
+    p += '## 三、加权评分结果\n\n';
+    p += '| 维度 | 权重 | 平均评分 | 加权得分 | 评分说明 |\n|------|------|---------|---------|----------|\n';
+    p += '（评分标准：采用5分制（1=极不利，5=极有利）。总得分>3分表明宏观环境整体有利；2-3分中性；<2分整体不利。）\n\n';
+    p += '## 四、核心机会与威胁总结\n\n';
+    p += '**主要机会：**\n1. ...\n\n';
+    p += '**主要威胁：**\n1. ...\n\n';
+    p += '## 五、战略建议\n（3-5条优先级行动建议）\n\n';
+    p += '## 六、分析局限性与注意事项\n（列出4-6条）';
+
+    // 地区上下文增强（按v3.1需求文档 §4.3）
+    if (region !== '全国') {
+        p += '\n\n注意：本次分析的目标地区为"' + region + '"，请在分析中遵循以下原则：\n';
+        p += '1. 以' + region + '为主要分析视角，聚焦该地区的区域特征\n';
+        p += '2. 同时融入国家级宏观背景，包括中央政策、全国经济形势对该地区的影响\n';
+        p += '3. 引用该地区的具体政策、经济数据';
+    }
+    return p;
+}
+
+// DOM 引用
+var formSection       = document.getElementById('form-section');
+var formFooter        = document.getElementById('form-footer');
+var loadingSection    = document.getElementById('loading-section');
+var reportSection     = document.getElementById('report-section');
+var fixedToolbar      = document.getElementById('fixed-toolbar');
+var generateBtn       = document.getElementById('generate-btn');
+var downloadWordBtn2  = document.getElementById('download-word-btn-2');
+var newReportBtn      = document.getElementById('new-report-btn');
+var fixedDownloadBtn  = document.getElementById('fixed-download-btn');
+var fixedNewBtn       = document.getElementById('fixed-new-btn');
+var targetInput       = document.getElementById('analysis-target');
+var regionSelect      = document.getElementById('region');
+var targetError       = document.getElementById('target-error');
+var regionError       = document.getElementById('region-error');
+var reportCover       = document.getElementById('report-cover');
+var reportContent     = document.getElementById('report-content');
+var reportFooter      = document.getElementById('report-footer');
+var elapsedSpan       = document.getElementById('elapsed-time');
+var estimatedSpan     = document.getElementById('estimated-time');
+
+var timerInterval = null;
+var startTime    = 0;
+var accumulated  = '';
+var isGenerating = false;
+var currentTarget = '';
+var currentRegion = '';
+
+// 配置 marked
+if (typeof marked !== 'undefined') {
+    marked.setOptions({ breaks: true, gfm: true });
+}
+
+// 初始化表单页脚
+if (formFooter) {
+    formFooter.innerHTML = CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION +
+        '&emsp;|&emsp;' + CONFIG.SLOGAN +
+        '&emsp;|&emsp;作者：' + CONFIG.AUTHOR;
+}
+
+// 事件绑定
+generateBtn.addEventListener('click', onGenerate);
+downloadWordBtn2.addEventListener('click', onDownloadWord);
+newReportBtn.addEventListener('click', onNewReport);
+fixedDownloadBtn.addEventListener('click', onDownloadWord);
+fixedNewBtn.addEventListener('click', onNewReport);
+targetInput.addEventListener('input', function() { targetError.style.display = 'none'; });
+regionSelect.addEventListener('change', function() { regionError.style.display = 'none'; });
+
+// ===== 表单校验 =====
+function validate() {
+    var ok = true;
+    if (!targetInput.value.trim()) { targetError.style.display = 'block'; ok = false; }
+    if (!regionSelect.value)        { regionError.style.display = 'block'; ok = false; }
+    return ok;
+}
+
+// ===== 生成 =====
+async function onGenerate() {
+    if (!validate() || isGenerating) return;
+    currentTarget = targetInput.value.trim();
+    currentRegion = regionSelect.value;
+
+    formSection.style.display    = 'none';
+    loadingSection.style.display = 'block';
+    isGenerating = true;
+    startTime = Date.now();
+    startTimer();
+
+    var promptText = buildUserPrompt(currentTarget, currentRegion);
+
+    try {
+        await streamDeepSeek(promptText);
+    } catch (err) {
+        console.error(err);
+        alert('调用 DeepSeek API 时出错：' + (err && err.message || err));
+        resetToForm();
+        return;
+    }
+
+    stopTimer();
+    isGenerating = false;
+    loadingSection.style.display = 'none';
+    reportSection.style.display  = 'block';
+    fixedToolbar.style.display  = 'block';
+    document.body.classList.add('toolbar-visible');
+    renderCover(currentTarget, currentRegion);
+    renderFooter();
+    if (reportSection.scrollIntoView) reportSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== 流式调用 DeepSeek =====
+async function streamDeepSeek(userPrompt) {
+    var resp = await fetch(CONFIG.API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model:       CONFIG.MODEL,
+            messages: [
+                { role: 'system', content: SYSTEM_PROMPT },
+                { role: 'user',   content: userPrompt }
+            ],
+            stream:      true,
+            temperature: 0.7
+        })
+    });
+
+    if (!resp.ok) {
+        var txt = await resp.text().catch(function() { return ''; });
+        throw new Error('HTTP ' + resp.status + ' ' + txt);
+    }
+
+    var reader = resp.body.getReader();
+    var dec    = new TextDecoder('utf-8');
+    var buf    = '';
+    accumulated = '';
+
+    for (;;) {
+        var result = await reader.read();
+        if (result.done) break;
+        buf += dec.decode(result.value, { stream: true });
+
+        var lines = buf.split('\n');
+        buf = lines.pop();
+
+        for (var i = 0; i < lines.length; i++) {
+            var raw  = lines[i];
+            var line = raw.trim();
+            if (line.indexOf('data:') !== 0) continue;
+            var payload = line.slice(5).trim();
+            if (payload === '[DONE]') continue;
+            try {
+                var obj    = JSON.parse(payload);
+                var choice = obj && obj.choices && obj.choices[0];
+                var delta  = choice && choice.delta && choice.delta.content;
+                if (delta) {
+                    accumulated += delta;
+                    renderContent(accumulated);
+                }
+            } catch (e) { /* 忽略不完整chunk */ }
+        }
+    }
+
+    // 处理余量
+    if (buf && buf.trim().indexOf('data:') === 0) {
+        var payload2 = buf.trim().slice(5).trim();
+        if (payload2 && payload2 !== '[DONE]') {
+            try {
+                var obj2   = JSON.parse(payload2);
+                var ch2    = obj2 && obj2.choices && obj2.choices[0];
+                var delta2 = ch2 && ch2.delta && ch2.delta.content;
+                if (delta2) { accumulated += delta2; renderContent(accumulated); }
+            } catch (e2) {}
+        }
+    }
+}
+
+// ===== 渲染 markdown =====
+function renderContent(md) {
+    if (!md) return;
+    var withCursor = md + '<span class="streaming-cursor"></span>';
+    if (reportContent) {
+        reportContent.innerHTML = (typeof marked !== 'undefined') ? marked.parse(withCursor) : withCursor;
+    }
+}
+
+// ===== 渲染封面 =====
+function renderCover(target, region) {
+    var d = new Date();
+    var dateStr = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+    if (reportCover) {
+        reportCover.innerHTML =
+            '<div class="cover-tag">PESTEL 宏观环境分析报告</div>' +
+            '<h1>' + CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION + '</h1>' +
+            '<p class="cover-subtitle">分析对象：' + target + '&emsp;|&emsp;目标地区：' + region + '</p>' +
+            '<p class="cover-subtitle">生成日期：' + dateStr + '</p>' +
+            '<div class="cover-line"></div>' +
+            '<p class="cover-product">' + CONFIG.SLOGAN + '</p>';
+    }
+}
+
+// ===== 渲染页脚 =====
+function renderFooter() {
+    if (reportFooter) {
+        reportFooter.innerHTML = CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION +
+            '&emsp;|&emsp;' + CONFIG.SLOGAN +
+            '&emsp;|&emsp;作者：' + CONFIG.AUTHOR;
+    }
+}
+
+// ===== 计时器 =====
+function startTimer() {
+    var estTotal = 90;
+    timerInterval = setInterval(function() {
+        var elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+        var remaining  = Math.max(0, estTotal - elapsedSec);
+        if (elapsedSpan)   elapsedSpan.textContent   = fmtTime(elapsedSec);
+        if (estimatedSpan) estimatedSpan.textContent = fmtTime(remaining);
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function fmtTime(s) {
+    var m   = Math.floor(s / 60);
+    var sec = s % 60;
+    return (m < 10 ? '0' + m : '' + m) + ':' + (sec < 10 ? '0' + sec : '' + sec);
+}
+
+// ===== 下载 Word 文档（HTML→DOC 方式，封面单独一页） =====
+function onDownloadWord() {
+    var target = currentTarget;
+    var region = currentRegion;
+    var d = new Date();
+    var month = d.getMonth() + 1;
+    var day = d.getDate();
+    var dateStr = d.getFullYear() + (month < 10 ? '0' : '') + month + (day < 10 ? '0' : '') + day;
+    var dateStrCN = d.getFullYear() + '年' + month + '月' + day + '日';
+
+    var filename = CONFIG.PRODUCT_NAME + '_' + target + '_' + region + '_' + dateStr + '.doc';
+
+    // 移除流式光标
+    if (reportContent) {
+        var cursor = reportContent.querySelector('.streaming-cursor');
+        if (cursor) cursor.remove();
+    }
+
+    // 获取报告正文 HTML，并清理多余空白
+    var bodyHTML = reportContent ? reportContent.innerHTML : '';
+    // 移除多余空白行：连续空段落、空div、纯换行br等
+    bodyHTML = bodyHTML.replace(/<p>\s*<\/p>/gi, '');
+    bodyHTML = bodyHTML.replace(/<div>\s*<\/div>/gi, '');
+    bodyHTML = bodyHTML.replace(/<br\s*\/?>\s*<br\s*\/?>/gi, '<br>');
+    bodyHTML = bodyHTML.replace(/(<\/p>\s*){2,}/gi, '</p>');
+    bodyHTML = bodyHTML.replace(/(<\/div>\s*){2,}/gi, '</div>');
+    bodyHTML = bodyHTML.replace(/<hr\s*\/?>\s*<hr\s*\/?>/gi, '<hr>');
+
+    // 构建 Word 兼容的 HTML 文档
+    var wordDoc = [
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" ',
+        'xmlns:w="urn:schemas-microsoft-com:office:word" ',
+        'xmlns="http://www.w3.org/TR/REC-html40">',
+        '<head>',
+        '<meta charset="utf-8">',
+        '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+        '<!--[if gte mso 9]>',
+        '<xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>',
+        '<![endif]-->',
+        '<style>',
+        '/* 通用 */',
+        'body { font-family: "Microsoft YaHei", "SimSun", sans-serif; font-size: 14px; color: #1A1A2E; line-height: 1.8; margin: 0; padding: 0; }',
+        '/* 封面 */',
+        '.cover { width: 100%; text-align: center; padding: 80px 60px 60px; page-break-after: always; }',
+        '.cover-tag { display: inline-block; background: transparent; color: #1A237E; font-size: 13px; font-weight: 600; padding: 5px 18px; border-radius: 20px; letter-spacing: 1px; margin-bottom: 24px; }',
+        '.cover h1 { font-size: 34px; font-weight: 700; margin: 0 0 12px; color: #1A237E; letter-spacing: 3px; }',
+        '.cover p { color: #1A1A2E; font-size: 15px; margin: 6px 0; }',
+        '.cover .divider { width: 60px; height: 2px; background: #0288D1; margin: 22px auto; }',
+        '.cover .slogan { color: #1A237E; font-size: 15px; font-weight: 700; letter-spacing: 2px; }',
+        '/* 正文 */',
+        '.body-content { padding: 20px 60px; }',
+        'h1 { font-size: 22px; color: #1A237E; margin: 30px 0 16px; padding-bottom: 10px; border-bottom: 2px solid #0288D1; font-weight: 700; page-break-after: avoid; }',
+        'h2 { font-size: 18px; color: #1A237E; margin: 24px 0 12px; font-weight: 600; page-break-after: avoid; }',
+        'h3 { font-size: 16px; color: #1A1A2E; margin: 18px 0 10px; font-weight: 600; }',
+        'p { margin-bottom: 12px; line-height: 1.85; }',
+        'table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 13.5px; page-break-inside: avoid; }',
+        'th { background: #1A237E; color: white; padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; white-space: nowrap; border: 1px solid #1A237E; }',
+        'td { padding: 10px 14px; border: 1px solid #E5E7EB; vertical-align: top; }',
+        'tr:nth-child(even) td { background: #F9FAFB; }',
+        'ul, ol { margin: 10px 0 16px 20px; }',
+        'li { margin-bottom: 7px; line-height: 1.8; }',
+        'strong { color: #1A237E; }',
+        'hr { border: none; border-top: 1px solid #E5E7EB; margin: 20px 0; }',
+        '/* 页脚 */',
+        '.doc-footer { text-align: center; padding: 28px 60px 20px; margin-top: 36px; border-top: 1px solid #E5E7EB; color: #6B7280; font-size: 12px; letter-spacing: 0.5px; }',
+        '</style>',
+        '</head>',
+        '<body>',
+        // 封面页
+        '<div class="cover">',
+        '<div class="cover-tag">PESTEL \u5B8F\u89C2\u73AF\u5883\u5206\u6790\u62A5\u544A</div>',
+        '<h1>' + CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION + '</h1>',
+        '<p>\u5206\u6790\u5BF9\u8C61\uFF1A' + target + '&emsp;|&emsp;\u76EE\u6807\u5730\u533A\uFF1A' + region + '</p>',
+        '<p>\u751F\u6210\u65E5\u671F\uFF1A' + dateStrCN + '</p>',
+        '<div class="divider"></div>',
+        '<p class="slogan">' + CONFIG.SLOGAN + '</p>',
+        '</div>',
+        // 正文
+        '<div class="body-content">' + bodyHTML + '</div>',
+        // 页脚
+        '<div class="doc-footer">' + CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION +
+        '&emsp;|&emsp;' + CONFIG.SLOGAN +
+        '&emsp;|&emsp;\u4F5C\u8005\uFF1A' + CONFIG.AUTHOR + '</div>',
+        '</body></html>'
+    ].join('\n');
+
+    // 创建 Blob 并下载
+    var blob = new Blob(['\ufeff', wordDoc], { type: 'application/msword' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ===== 新建分析 =====
+function onNewReport() {
+    if (reportSection)   reportSection.style.display   = 'none';
+    if (fixedToolbar)    fixedToolbar.style.display     = 'none';
+    document.body.classList.remove('toolbar-visible');
+    if (formSection)     formSection.style.display      = 'block';
+    accumulated = '';
+    if (reportContent) reportContent.innerHTML = '';
+    if (reportFooter)  reportFooter.innerHTML  = '';
+    if (elapsedSpan)   elapsedSpan.textContent   = '00:00';
+    if (estimatedSpan) estimatedSpan.textContent = '01:30';
+    if (window.scrollTo) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== 重置到表单 =====
+function resetToForm() {
+    stopTimer();
+    isGenerating = false;
+    if (loadingSection) loadingSection.style.display = 'none';
+    if (formSection)    formSection.style.display    = 'block';
+}
+</script>
+</body>
+</html>
