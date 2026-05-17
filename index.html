@@ -113,6 +113,36 @@
         .report-footer { text-align: center; padding: 28px 0 16px; margin-top: 36px; border-top: 1px solid var(--border); color: #FFFFFF; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
         .streaming-cursor { display: inline-block; width: 7px; height: 18px; background: var(--gold); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
         @keyframes blink { 50% { opacity: 0; } }
+        /* 预览区 */
+        .preview-section { margin-top: 32px; }
+        .preview-section h2 { color: var(--navy); font-size: 22px; font-weight: 700; margin-bottom: 6px; padding-bottom: 14px; border-bottom: 2px solid var(--gold); }
+        .preview-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+        .dimension-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px; }
+        .dimension-card { background: var(--white); border-radius: 10px; padding: 18px 20px; box-shadow: 0 2px 12px rgba(11,29,58,0.08); border-left: 4px solid; transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
+        .dimension-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(11,29,58,0.12); }
+        .dimension-card .dim-letter { display: inline-block; width: 34px; height: 34px; border-radius: 8px; color: #fff; font-size: 17px; font-weight: 700; text-align: center; line-height: 34px; margin-bottom: 8px; }
+        .dimension-card .dim-name { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+        .dimension-card .dim-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+        .dim-political { border-left-color: #1A237E; }
+        .dim-political .dim-letter { background: #1A237E; }
+        .dim-economic { border-left-color: #0288D1; }
+        .dim-economic .dim-letter { background: #0288D1; }
+        .dim-social { border-left-color: #00897B; }
+        .dim-social .dim-letter { background: #00897B; }
+        .dim-tech { border-left-color: #F57C00; }
+        .dim-tech .dim-letter { background: #F57C00; }
+        .dim-env { border-left-color: #388E3C; }
+        .dim-env .dim-letter { background: #388E3C; }
+        .dim-legal { border-left-color: #7B1FA2; }
+        .dim-legal .dim-letter { background: #7B1FA2; }
+        .report-structure { background: var(--white); border-radius: 10px; padding: 26px 32px; box-shadow: 0 2px 12px rgba(11,29,58,0.08); }
+        .report-structure h3 { color: var(--navy); font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .structure-list { list-style: none; padding: 0; margin: 0; }
+        .structure-list li { padding: 10px 16px; border-left: 3px solid var(--gold); margin-bottom: 8px; font-size: 14px; color: var(--text); background: #F8FAFC; border-radius: 0 6px 6px 0; }
+        .structure-list li:last-child { margin-bottom: 0; }
+        .structure-list li .struct-num { color: var(--navy); font-weight: 700; margin-right: 8px; }
+        .structure-list li .struct-desc { color: var(--text-secondary); font-size: 13px; }
+        .page-footer { text-align: center; padding: 24px 0 8px; margin-top: 36px; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 13px; letter-spacing: 0.5px; }
         @media (max-width: 640px) {
             .form-row { flex-direction: column; gap: 0; }
             .form-section { padding: 24px 20px; }
@@ -120,6 +150,8 @@
             .report-cover { padding: 36px 20px; }
             .report-actions { padding: 16px 20px 24px; }
             .container { padding: 16px 10px; }
+            .dimension-grid { grid-template-columns: 1fr; }
+            .report-structure { padding: 20px; }
         }
     </style>
 </head>
@@ -193,8 +225,60 @@
         <div class="btn-row">
             <button id="generate-btn" class="btn btn-gold">生成报告</button>
         </div>
-        <div id="form-footer" style="text-align:center;padding:20px 0 4px;border-top:1px solid var(--border);margin-top:20px;color:var(--text-secondary);font-size:13px;font-weight:600;letter-spacing:0.5px;"></div>
     </div>
+
+    <!-- 报告框架预览 -->
+    <div id="preview-section" class="preview-section">
+        <h2>报告框架预览</h2>
+        <p class="preview-subtitle">AI 将按以下框架为您生成专业的宏观环境分析报告</p>
+        <div class="dimension-grid">
+            <div class="dimension-card dim-political">
+                <div class="dim-letter">P</div>
+                <div class="dim-name">政治因素</div>
+                <div class="dim-desc">政策导向、政府支持力度、产业规划、国际关系与地缘政治影响</div>
+            </div>
+            <div class="dimension-card dim-economic">
+                <div class="dim-letter">E</div>
+                <div class="dim-name">经济因素</div>
+                <div class="dim-desc">GDP增速、产业结构、投资环境、消费趋势与市场容量</div>
+            </div>
+            <div class="dimension-card dim-social">
+                <div class="dim-letter">S</div>
+                <div class="dim-name">社会因素</div>
+                <div class="dim-desc">人口结构、消费观念、教育水平、公众认知与社会态度</div>
+            </div>
+            <div class="dimension-card dim-tech">
+                <div class="dim-letter">T</div>
+                <div class="dim-name">技术因素</div>
+                <div class="dim-desc">技术成熟度、研发投入、专利布局、创新生态与关键技术突破</div>
+            </div>
+            <div class="dimension-card dim-env">
+                <div class="dim-letter">E</div>
+                <div class="dim-name">环境因素</div>
+                <div class="dim-desc">环保政策、碳排放约束、资源利用、可持续发展要求</div>
+            </div>
+            <div class="dimension-card dim-legal">
+                <div class="dim-letter">L</div>
+                <div class="dim-name">法律因素</div>
+                <div class="dim-desc">法律法规、行业标准、知识产权保护、合规要求与监管趋势</div>
+            </div>
+        </div>
+        <div class="report-structure">
+            <h3>报告输出结构</h3>
+            <ul class="structure-list">
+                <li><span class="struct-num">一</span>执行摘要 <span class="struct-desc">— 核心发现速览</span></li>
+                <li><span class="struct-num">二</span>六维度详细分析 <span class="struct-desc">— 含因素识别表格 + 关键启示</span></li>
+                <li><span class="struct-num">三</span>加权评分结果 <span class="struct-desc">— 5 分制量化评估</span></li>
+                <li><span class="struct-num">四</span>核心机会与威胁总结</li>
+                <li><span class="struct-num">五</span>战略建议 <span class="struct-desc">— 优先级行动方案</span></li>
+                <li><span class="struct-num">六</span>分析局限性与注意事项</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 页面页脚 -->
+    <div id="page-footer" class="page-footer"></div>
+
     <div id="loading-section" class="loading-section">
         <div class="spinner"></div>
         <div class="loading-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
@@ -273,7 +357,8 @@ function buildUserPrompt(target, region) {
 
 // DOM 引用
 var formSection       = document.getElementById('form-section');
-var formFooter        = document.getElementById('form-footer');
+var previewSection    = document.getElementById('preview-section');
+var pageFooter        = document.getElementById('page-footer');
 var loadingSection    = document.getElementById('loading-section');
 var reportSection     = document.getElementById('report-section');
 var fixedToolbar      = document.getElementById('fixed-toolbar');
@@ -304,9 +389,9 @@ if (typeof marked !== 'undefined') {
     marked.setOptions({ breaks: true, gfm: true });
 }
 
-// 初始化表单页脚
-if (formFooter) {
-    formFooter.innerHTML = CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION +
+// 初始化页面页脚
+if (pageFooter) {
+    pageFooter.innerHTML = CONFIG.PRODUCT_NAME + ' ' + CONFIG.VERSION +
         '&emsp;|&emsp;' + CONFIG.SLOGAN +
         '&emsp;|&emsp;作者：' + CONFIG.AUTHOR;
 }
@@ -335,6 +420,8 @@ async function onGenerate() {
     currentRegion = regionSelect.value;
 
     formSection.style.display    = 'none';
+    if (previewSection) previewSection.style.display = 'none';
+    if (pageFooter)    pageFooter.style.display    = 'none';
     loadingSection.style.display = 'block';
     isGenerating = true;
     startTime = Date.now();
@@ -589,6 +676,8 @@ function onNewReport() {
     if (fixedToolbar)    fixedToolbar.style.display     = 'none';
     document.body.classList.remove('toolbar-visible');
     if (formSection)     formSection.style.display      = 'block';
+    if (previewSection)  previewSection.style.display   = 'block';
+    if (pageFooter)      pageFooter.style.display       = 'block';
     accumulated = '';
     if (reportContent) reportContent.innerHTML = '';
     if (reportFooter)  reportFooter.innerHTML  = '';
@@ -603,6 +692,8 @@ function resetToForm() {
     isGenerating = false;
     if (loadingSection) loadingSection.style.display = 'none';
     if (formSection)    formSection.style.display    = 'block';
+    if (previewSection) previewSection.style.display = 'block';
+    if (pageFooter)     pageFooter.style.display     = 'block';
 }
 </script>
 </body>
